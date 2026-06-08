@@ -1,0 +1,42 @@
+name: Deploy Painting-JHG
+
+on:
+  push:
+    branches:
+      - main
+
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Pull latest code
+        run: |
+          cd /var/www/Painting-JHG
+          git pull origin main
+
+      - name: Fix permissions
+        run: |
+          cd /var/www/Painting-JHG
+
+          sudo chown -R www-data:www-data storage
+          sudo chown -R www-data:www-data bootstrap/cache
+
+          sudo chmod -R 775 storage
+          sudo chmod -R 775 bootstrap/cache
+
+      - name: Install dependencies
+        run: |
+          cd /var/www/Painting-JHG
+          composer install --no-dev --optimize-autoloader
+
+      - name: Run migrations
+        run: |
+          cd /var/www/Painting-JHG
+          sudo -u www-data php artisan migrate --force
+
+      - name: Clear cache
+        run: |
+          cd /var/www/Painting-JHG
+          sudo -u www-data php artisan optimize:clear
