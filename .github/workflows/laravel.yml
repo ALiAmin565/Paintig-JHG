@@ -37,6 +37,7 @@ jobs:
         run: |
           cd /var/www/Painting-JHG
           sudo -u www-data php artisan migrate --force
+          sudo -u www-data php artisan db:seed
 
       - name: Link storage
         run: |

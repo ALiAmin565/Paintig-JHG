@@ -24,6 +24,13 @@ class UserSeeder extends Seeder
                 'password' => 'password123',
                 'status' => 'active',
             ],
+            [
+                'username' => 'venus',
+                'full_name' => 'Venus',
+                'email' => 'venus@painting-jhg.com',
+                'password' => 'basjhg@2026',
+                'status' => 'active',
+            ],
         ];
 
         foreach ($users as $userData) {
