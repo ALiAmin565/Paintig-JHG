@@ -27,7 +27,9 @@ class Painting extends Model
         'height_without_frame',
         'owned_by',
         'purchased_by',
-        'purchased_from',
+        'purchased_from_type',
+        'gallery_id',
+        'purchased_from_person',
         'paid_by',
         'certificate_type',
         'certificate_text',
@@ -58,6 +60,11 @@ class Painting extends Model
     public function location(): BelongsTo
     {
         return $this->belongsTo(Location::class);
+    }
+
+    public function gallery(): BelongsTo
+    {
+        return $this->belongsTo(Gallery::class);
     }
 
     public function notes(): HasMany
@@ -102,6 +109,24 @@ class Painting extends Model
         };
     }
 
+    public function purchasedFromLabel(): string
+    {
+        return match ($this->purchased_from_type) {
+            'gallery' => $this->gallery?->name ?? 'Unknown Gallery',
+            'person' => $this->purchased_from_person ?? '—',
+            default => '—',
+        };
+    }
+
+    public function purchasedFromTypeLabel(): string
+    {
+        return match ($this->purchased_from_type) {
+            'gallery' => 'Gallery',
+            'person' => 'Person',
+            default => 'N/A',
+        };
+    }
+
     public function dimensionsWithFrameLabel(): string
     {
         return $this->formatDimensions($this->width_with_frame, $this->height_with_frame);
@@ -139,6 +164,10 @@ class Painting extends Model
 
     private function formatDimensions($width, $height): string
     {
+        if ($width === null || $height === null) {
+            return '—';
+        }
+
         return number_format((float) $width, 2).' × '.number_format((float) $height, 2).' cm';
     }
 }

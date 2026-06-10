@@ -12,7 +12,7 @@ class PaintingRequestRules
 
     public static function rules(bool $photoRequired = true): array
     {
-        $dimensionRule = ['required', 'numeric', 'min:0', 'max:'.self::MAX_DIMENSION];
+        $optionalDimensionRule = ['nullable', 'numeric', 'min:0', 'max:'.self::MAX_DIMENSION];
 
         return [
             'location_type' => ['required', Rule::in(['hotel', 'location', 'none'])],
@@ -25,13 +25,16 @@ class PaintingRequestRules
             'currency' => ['required', Rule::in(self::CURRENCIES)],
             'media' => ['required', 'string', 'max:255'],
             'production_year' => ['required', 'integer', 'min:1000', 'max:'.date('Y')],
-            'width_with_frame' => $dimensionRule,
-            'height_with_frame' => $dimensionRule,
-            'width_without_frame' => $dimensionRule,
-            'height_without_frame' => $dimensionRule,
+            'width_with_frame' => array_merge($optionalDimensionRule, ['required_with:height_with_frame']),
+            'height_with_frame' => array_merge($optionalDimensionRule, ['required_with:width_with_frame']),
+            'width_without_frame' => array_merge($optionalDimensionRule, ['required_with:height_without_frame']),
+            'height_without_frame' => array_merge($optionalDimensionRule, ['required_with:width_without_frame']),
             'owned_by' => ['required', 'string', 'max:255'],
             'purchased_by' => ['required', 'string', 'max:255'],
-            'purchased_from' => ['required', 'string', 'max:255'],
+            'purchased_from_type' => ['required', Rule::in(['gallery', 'person'])],
+            'gallery_id' => ['nullable', 'required_if:purchased_from_type,gallery', 'exists:galleries,id'],
+            'new_gallery_name' => ['nullable', 'string', 'max:255'],
+            'purchased_from_person' => ['nullable', 'required_if:purchased_from_type,person', 'string', 'max:255'],
             'paid_by' => ['required', 'string', 'max:255'],
             'certificate_type' => ['required', Rule::in(['text', 'file'])],
             'certificate_text' => ['nullable', 'required_if:certificate_type,text', 'string', 'max:5000'],
@@ -53,8 +56,14 @@ class PaintingRequestRules
             'height_with_frame.max' => 'Height with frame may not exceed '.number_format(self::MAX_DIMENSION, 2).'.',
             'width_without_frame.max' => 'Width without frame may not exceed '.number_format(self::MAX_DIMENSION, 2).'.',
             'height_without_frame.max' => 'Height without frame may not exceed '.number_format(self::MAX_DIMENSION, 2).'.',
+            'width_with_frame.required_with' => 'Width with frame is required when height with frame is provided.',
+            'height_with_frame.required_with' => 'Height with frame is required when width with frame is provided.',
+            'width_without_frame.required_with' => 'Width without frame is required when height without frame is provided.',
+            'height_without_frame.required_with' => 'Height without frame is required when width without frame is provided.',
             'hotel_id.required_if' => 'Please select a hotel when location type is Hotel.',
             'location_id.required_if' => 'Please select or create a location when location type is Other Location.',
+            'gallery_id.required_if' => 'Please select or create a gallery when purchased from type is Gallery.',
+            'purchased_from_person.required_if' => 'Please enter a person name when purchased from type is Person.',
             'certificate_text.required_if' => 'Certificate text is required when using text mode.',
             'price.required' => 'Price is required.',
             'currency.required' => 'Currency is required.',

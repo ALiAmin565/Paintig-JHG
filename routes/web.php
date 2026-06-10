@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\GalleryController as ApiGalleryController;
 use App\Http\Controllers\Api\HotelController as ApiHotelController;
 use App\Http\Controllers\Api\LocationController as ApiLocationController;
 use App\Http\Controllers\AuthController;
@@ -25,6 +26,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/api/hotels', [ApiHotelController::class, 'index'])->name('api.hotels');
     Route::get('/api/locations', [ApiLocationController::class, 'index'])->name('api.locations');
     Route::post('/api/locations', [ApiLocationController::class, 'store'])->name('api.locations.store');
+    Route::get('/api/galleries', [ApiGalleryController::class, 'index'])->name('api.galleries');
+    Route::post('/api/galleries', [ApiGalleryController::class, 'store'])->name('api.galleries.store');
     Route::resource('locations', LocationController::class)->except(['show']);
 
     Route::middleware('admin')->group(function () {

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePaintingRequest;
 use App\Http\Requests\UpdatePaintingRequest;
+use App\Models\Gallery;
 use App\Models\Hotel;
 use App\Models\Location;
 use App\Models\Painting;
@@ -83,7 +84,7 @@ class PaintingController extends Controller
 
     public function show(Painting $painting): View
     {
-        $painting->load(['hotel', 'location', 'notes.user']);
+        $painting->load(['hotel', 'location', 'gallery', 'notes.user']);
 
         return view('paintings.show', compact('painting'));
     }
@@ -103,7 +104,7 @@ class PaintingController extends Controller
     public function edit(Painting $painting): View
     {
         $hotels = Hotel::where('status', 'active')->orderBy('name')->get();
-        $painting->load('location');
+        $painting->load(['location', 'gallery']);
 
         return view('paintings.edit', compact('painting', 'hotels'));
     }
@@ -135,7 +136,7 @@ class PaintingController extends Controller
 
     private function preparePaintingData(Request $request, ?Painting $painting = null): array
     {
-        $data = $request->safe()->except(['photo', 'certificate_file', 'new_location_name']);
+        $data = $request->safe()->except(['photo', 'certificate_file', 'new_location_name', 'new_gallery_name']);
 
         $locationType = $request->input('location_type');
 
@@ -154,6 +155,22 @@ class PaintingController extends Controller
         } else {
             $data['hotel_id'] = null;
             $data['location_id'] = null;
+        }
+
+        $purchasedFromType = $request->input('purchased_from_type');
+
+        if ($purchasedFromType === 'gallery') {
+            $data['purchased_from_person'] = null;
+
+            if (! $request->filled('gallery_id') && $request->filled('new_gallery_name')) {
+                $gallery = Gallery::firstOrCreate(
+                    ['name' => trim($request->input('new_gallery_name'))],
+                    ['description' => null]
+                );
+                $data['gallery_id'] = $gallery->id;
+            }
+        } else {
+            $data['gallery_id'] = null;
         }
 
         if ($request->input('certificate_type') === 'text') {

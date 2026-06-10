@@ -55,7 +55,7 @@
                         <tr class="hover:bg-gray-50">
                             <td>
                                 <div class="font-medium text-gray-900">{{ $user->full_name }}</div>
-                                <div class="text-sm text-gray-500">@{{ $user->username }}</div>
+                                <div class="text-sm text-gray-500">{{ $user->username }}</div>
                             </td>
                             <td class="text-gray-700 hidden md:table-cell">{{ $user->email }}</td>
                             <td>

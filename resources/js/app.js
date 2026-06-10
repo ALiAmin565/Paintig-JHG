@@ -1,3 +1,4 @@
+import { initSearchableGallerySelects } from './gallery-search';
 import { initLiveHotelIndexSearch, initSearchableHotelSelects } from './hotel-search';
 import { initSearchableLocationSelects } from './location-search';
 import { initPaintingForm } from './painting-form';
@@ -63,6 +64,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     initSearchableHotelSelects();
     initSearchableLocationSelects();
+    initSearchableGallerySelects();
     initPaintingForm();
     initLiveHotelIndexSearch();
     initLivePaintingIndexFilter();
