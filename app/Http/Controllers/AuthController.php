@@ -10,7 +10,7 @@ class AuthController extends Controller
     public function showLogin()
     {
         return auth()->check()
-            ? redirect()->route('paintings.index')
+            ? redirect()->route(auth()->user()->homeRoute())
             : view('auth.login');
     }
 
@@ -32,7 +32,7 @@ class AuthController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('paintings.index'));
+        return redirect()->intended(route(auth()->user()->homeRoute()));
     }
 
     public function logout()

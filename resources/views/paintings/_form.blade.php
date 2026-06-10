@@ -1,5 +1,10 @@
 @props(['painting' => null, 'hotels', 'selectedHotelId' => null])
 
+@php
+    $locationType = old('location_type', $painting?->location_type ?? 'none');
+    $certificateType = old('certificate_type', $painting?->certificate_type ?? 'text');
+@endphp
+
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
     <div class="md:col-span-2">
         <label for="photo" class="block text-gray-900 font-semibold mb-2 text-sm sm:text-base">Photo of the Painting</label>
@@ -26,6 +31,37 @@
     </div>
 
     <div>
+        <label for="painter_name" class="block text-gray-900 font-semibold mb-2 text-sm sm:text-base">Painter Name</label>
+        <input type="text" name="painter_name" id="painter_name" value="{{ old('painter_name', $painting?->painter_name) }}"
+            class="form-input" required>
+        @error('painter_name')
+            <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+        @enderror
+    </div>
+
+    <div>
+        <label for="price" class="block text-gray-900 font-semibold mb-2 text-sm sm:text-base">Price</label>
+        <input type="number" name="price" id="price" step="0.01" min="0"
+            value="{{ old('price', $painting?->price) }}"
+            class="form-input" required>
+        @error('price')
+            <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+        @enderror
+    </div>
+
+    <div>
+        <label for="currency" class="block text-gray-900 font-semibold mb-2 text-sm sm:text-base">Currency</label>
+        <select name="currency" id="currency" class="form-select" required>
+            @foreach(\App\Http\Requests\PaintingRequestRules::CURRENCIES as $currency)
+                <option value="{{ $currency }}" @selected(old('currency', $painting?->currency ?? 'USD') === $currency)>{{ $currency }}</option>
+            @endforeach
+        </select>
+        @error('currency')
+            <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+        @enderror
+    </div>
+
+    <div>
         <label for="media" class="block text-gray-900 font-semibold mb-2 text-sm sm:text-base">Media</label>
         <input type="text" name="media" id="media" value="{{ old('media', $painting?->media) }}"
             placeholder="e.g. Oil on canvas"
@@ -45,45 +81,105 @@
         @enderror
     </div>
 
-    <div>
-        <label for="dimensions_with_frame" class="block text-gray-900 font-semibold mb-2 text-sm sm:text-base">Dimensions With Frame</label>
-        <input type="number" name="dimensions_with_frame" id="dimensions_with_frame" step="0.01" min="0" max="999999.99"
-            value="{{ old('dimensions_with_frame', $painting?->dimensions_with_frame) }}"
-            class="form-input" required>
-        <p class="text-xs text-gray-500 mt-1">Enter size in cm (max 999,999.99)</p>
-        @error('dimensions_with_frame')
-            <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
-        @enderror
-    </div>
-
-    <div>
-        <label for="dimensions_without_frame" class="block text-gray-900 font-semibold mb-2 text-sm sm:text-base">Dimensions Without Frame</label>
-        <input type="number" name="dimensions_without_frame" id="dimensions_without_frame" step="0.01" min="0" max="999999.99"
-            value="{{ old('dimensions_without_frame', $painting?->dimensions_without_frame) }}"
-            class="form-input" required>
-        <p class="text-xs text-gray-500 mt-1">Enter size in cm (max 999,999.99)</p>
-        @error('dimensions_without_frame')
-            <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
-        @enderror
+    <div class="md:col-span-2">
+        <label class="block text-gray-900 font-semibold mb-2 text-sm sm:text-base">Dimensions With Frame (cm)</label>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+                <label for="width_with_frame" class="block text-xs font-medium text-gray-600 mb-1">Width</label>
+                <input type="number" name="width_with_frame" id="width_with_frame" step="0.01" min="0" max="999999.99"
+                    value="{{ old('width_with_frame', $painting?->width_with_frame) }}"
+                    class="form-input" required>
+                @error('width_with_frame')
+                    <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+            <div>
+                <label for="height_with_frame" class="block text-xs font-medium text-gray-600 mb-1">Height</label>
+                <input type="number" name="height_with_frame" id="height_with_frame" step="0.01" min="0" max="999999.99"
+                    value="{{ old('height_with_frame', $painting?->height_with_frame) }}"
+                    class="form-input" required>
+                @error('height_with_frame')
+                    <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+        </div>
     </div>
 
     <div class="md:col-span-2">
-        <label class="block text-gray-900 font-semibold mb-2 text-sm sm:text-base">Location (Hotel)</label>
-        @php
-            $selectedHotelId = old('hotel_id', $painting?->hotel_id ?? $selectedHotelId);
-            $selectedHotelLabel = null;
-            if ($selectedHotelId) {
-                $selectedHotel = $hotels->firstWhere('id', (int) $selectedHotelId) ?? $painting?->hotel;
-                $selectedHotelLabel = $selectedHotel ? "{$selectedHotel->name} ({$selectedHotel->pms_code})" : null;
-            }
-        @endphp
-        <x-searchable-hotel-select
-            :selected-id="$selectedHotelId"
-            :selected-label="$selectedHotelLabel"
-        />
-        @error('hotel_id')
+        <label class="block text-gray-900 font-semibold mb-2 text-sm sm:text-base">Dimensions Without Frame (cm)</label>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+                <label for="width_without_frame" class="block text-xs font-medium text-gray-600 mb-1">Width</label>
+                <input type="number" name="width_without_frame" id="width_without_frame" step="0.01" min="0" max="999999.99"
+                    value="{{ old('width_without_frame', $painting?->width_without_frame) }}"
+                    class="form-input" required>
+                @error('width_without_frame')
+                    <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+            <div>
+                <label for="height_without_frame" class="block text-xs font-medium text-gray-600 mb-1">Height</label>
+                <input type="number" name="height_without_frame" id="height_without_frame" step="0.01" min="0" max="999999.99"
+                    value="{{ old('height_without_frame', $painting?->height_without_frame) }}"
+                    class="form-input" required>
+                @error('height_without_frame')
+                    <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+        </div>
+    </div>
+
+    <div class="md:col-span-2">
+        <label class="block text-gray-900 font-semibold mb-2 text-sm sm:text-base">Location</label>
+        <div class="flex flex-wrap gap-3 mb-4">
+            @foreach(['hotel' => 'Hotel', 'location' => 'Other Location', 'none' => 'N/A'] as $value => $label)
+                <label class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border-2 cursor-pointer transition-colors {{ $locationType === $value ? 'border-amber-900 bg-amber-50 text-amber-900' : 'border-gray-200 text-gray-700 hover:border-amber-200' }}">
+                    <input type="radio" name="location_type" value="{{ $value }}" data-location-type
+                        @checked($locationType === $value) class="sr-only">
+                    <span class="text-sm font-medium">{{ $label }}</span>
+                </label>
+            @endforeach
+        </div>
+        @error('location_type')
             <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
         @enderror
+
+        <div data-location-section="hotel" @class(['hidden' => $locationType !== 'hotel'])>
+            @php
+                $selectedHotelId = old('hotel_id', $painting?->hotel_id ?? $selectedHotelId);
+                $selectedHotelLabel = null;
+                if ($selectedHotelId) {
+                    $selectedHotel = $hotels->firstWhere('id', (int) $selectedHotelId) ?? $painting?->hotel;
+                    $selectedHotelLabel = $selectedHotel ? "{$selectedHotel->name} ({$selectedHotel->pms_code})" : null;
+                }
+            @endphp
+            <x-searchable-hotel-select
+                :selected-id="$selectedHotelId"
+                :selected-label="$selectedHotelLabel"
+                :required="$locationType === 'hotel'"
+            />
+            @error('hotel_id')
+                <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+            @enderror
+        </div>
+
+        <div data-location-section="location" @class(['hidden' => $locationType !== 'location'])>
+            @php
+                $selectedLocationId = old('location_id', $painting?->location_id);
+                $selectedLocationLabel = old('new_location_name') ?: ($painting?->location?->name);
+            @endphp
+            <x-searchable-location-select
+                :selected-id="$selectedLocationId"
+                :selected-label="$selectedLocationLabel"
+                :required="$locationType === 'location'"
+            />
+            @error('location_id')
+                <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+            @enderror
+            @error('new_location_name')
+                <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+            @enderror
+        </div>
     </div>
 
     <div>
@@ -123,12 +219,37 @@
     </div>
 
     <div class="md:col-span-2">
-        <label for="certificate_of_authenticity" class="block text-gray-900 font-semibold mb-2 text-sm sm:text-base">Certificate of Authenticity</label>
-        <input type="text" name="certificate_of_authenticity" id="certificate_of_authenticity"
-            value="{{ old('certificate_of_authenticity', $painting?->certificate_of_authenticity) }}"
-            class="form-input" required>
-        @error('certificate_of_authenticity')
+        <label class="block text-gray-900 font-semibold mb-2 text-sm sm:text-base">Certificate of Authenticity</label>
+        <div class="flex flex-wrap gap-3 mb-4">
+            @foreach(['text' => 'Text', 'file' => 'File Upload'] as $value => $label)
+                <label class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border-2 cursor-pointer transition-colors {{ $certificateType === $value ? 'border-amber-900 bg-amber-50 text-amber-900' : 'border-gray-200 text-gray-700 hover:border-amber-200' }}">
+                    <input type="radio" name="certificate_type" value="{{ $value }}" data-certificate-type
+                        @checked($certificateType === $value) class="sr-only">
+                    <span class="text-sm font-medium">{{ $label }}</span>
+                </label>
+            @endforeach
+        </div>
+        @error('certificate_type')
             <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
         @enderror
+
+        <div data-certificate-section="text" @class(['hidden' => $certificateType !== 'text'])>
+            <textarea name="certificate_text" id="certificate_text" rows="3" class="form-input"
+                placeholder="Enter certificate details...">{{ old('certificate_text', $painting?->certificate_text) }}</textarea>
+            @error('certificate_text')
+                <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+            @enderror
+        </div>
+
+        <div data-certificate-section="file" @class(['hidden' => $certificateType !== 'file'])>
+            @if($painting?->certificate_type === 'file' && $painting->certificateUrl())
+                <p class="text-sm text-gray-600 mb-2">Current file: <a href="{{ $painting->certificateUrl() }}" target="_blank" class="text-amber-900 hover:underline">View certificate</a></p>
+            @endif
+            <input type="file" name="certificate_file" id="certificate_file" accept=".pdf,image/jpeg,image/png,image/webp"
+                class="form-input file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-amber-50 file:text-amber-900 file:font-medium">
+            @error('certificate_file')
+                <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+            @enderror
+        </div>
     </div>
 </div>

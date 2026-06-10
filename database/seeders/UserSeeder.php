@@ -16,6 +16,7 @@ class UserSeeder extends Seeder
                 'email' => 'admin@painting-jhg.com',
                 'password' => 'password123',
                 'status' => 'active',
+                'role' => 'admin',
             ],
             [
                 'username' => 'manager',
@@ -23,6 +24,7 @@ class UserSeeder extends Seeder
                 'email' => 'manager@painting-jhg.com',
                 'password' => 'password123',
                 'status' => 'active',
+                'role' => 'user',
             ],
             [
                 'username' => 'venus',
@@ -30,6 +32,7 @@ class UserSeeder extends Seeder
                 'email' => 'venus@painting-jhg.com',
                 'password' => 'basjhg@2026',
                 'status' => 'active',
+                'role' => 'user',
             ],
         ];
 

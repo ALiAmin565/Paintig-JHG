@@ -9,7 +9,7 @@
 
     <h1 class="text-2xl sm:text-3xl font-semibold text-gray-900 -tracking-wide mb-6">Add Painting</h1>
 
-    <form action="{{ route('paintings.store') }}" method="POST" enctype="multipart/form-data" class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
+    <form action="{{ route('paintings.store') }}" method="POST" enctype="multipart/form-data" data-painting-form class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
         @csrf
         @include('paintings._form', ['hotels' => $hotels, 'selectedHotelId' => $selectedHotelId])
 

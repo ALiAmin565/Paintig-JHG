@@ -71,6 +71,13 @@ export function initSearchableHotelSelects() {
                     form.requestSubmit();
                 }
             }
+
+            if (root.dataset.liveFilter === 'true') {
+                const form = root.closest('form');
+                if (form) {
+                    form.dispatchEvent(new CustomEvent('live-filter-change', { bubbles: true }));
+                }
+            }
         }
 
         function fetchHotels(search) {
@@ -101,11 +108,23 @@ export function initSearchableHotelSelects() {
             fetchHotels(searchInput.value.trim());
         });
 
+        function triggerLiveFilter() {
+            if (root.dataset.liveFilter !== 'true') {
+                return;
+            }
+
+            const form = root.closest('form');
+            if (form) {
+                form.dispatchEvent(new CustomEvent('live-filter-change', { bubbles: true }));
+            }
+        }
+
         searchInput.addEventListener('input', function () {
             hiddenInput.value = '';
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(function () {
                 fetchHotels(searchInput.value.trim());
+                triggerLiveFilter();
             }, 250);
         });
 

@@ -13,7 +13,10 @@ class UpdatePaintingRequest extends FormRequest
 
     public function rules(): array
     {
-        return PaintingRequestRules::rules(false);
+        $rules = PaintingRequestRules::rules(false);
+        $rules['certificate_file'] = ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png,webp', 'max:10240'];
+
+        return $rules;
     }
 
     public function messages(): array

@@ -5,28 +5,39 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StorePaintingRequest;
 use App\Http\Requests\UpdatePaintingRequest;
 use App\Models\Hotel;
+use App\Models\Location;
 use App\Models\Painting;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class PaintingController extends Controller
 {
-    public function index(Request $request): View
+    public function index(Request $request): View|\Illuminate\Http\Response
     {
-        $query = Painting::query()->with('hotel');
+        $query = Painting::query()->with(['hotel', 'location']);
 
         if ($search = $request->string('search')->trim()->toString()) {
             $query->where(function ($builder) use ($search) {
                 $builder->where('title', 'like', "%{$search}%")
                     ->orWhere('media', 'like', "%{$search}%")
+                    ->orWhere('painter_name', 'like', "%{$search}%")
                     ->orWhere('owned_by', 'like', "%{$search}%");
             });
         }
 
+        if ($locationType = $request->string('location_type')->trim()->toString()) {
+            $query->where('location_type', $locationType);
+        }
+
         if ($hotelId = $request->integer('hotel_id')) {
-            $query->where('hotel_id', $hotelId);
+            $query->where('location_type', 'hotel')->where('hotel_id', $hotelId);
+        }
+
+        if ($locationId = $request->integer('location_id')) {
+            $query->where('location_type', 'location')->where('location_id', $locationId);
         }
 
         $sort = $request->string('sort')->toString();
@@ -34,13 +45,20 @@ class PaintingController extends Controller
             'year_asc' => $query->orderBy('production_year'),
             'year_desc' => $query->orderByDesc('production_year'),
             'title_asc' => $query->orderBy('title'),
+            'price_desc' => $query->orderByDesc('price'),
+            'price_asc' => $query->orderBy('price'),
             default => $query->orderByDesc('created_at'),
         };
 
         $paintings = $query->paginate(15)->withQueryString();
         $hotels = Hotel::orderBy('name')->get(['id', 'name']);
+        $locations = Location::orderBy('name')->get(['id', 'name']);
 
-        return view('paintings.index', compact('paintings', 'hotels'));
+        if ($request->ajax()) {
+            return response()->view('paintings._index-results', compact('paintings'));
+        }
+
+        return view('paintings.index', compact('paintings', 'hotels', 'locations'));
     }
 
     public function create(Request $request): View
@@ -53,10 +71,10 @@ class PaintingController extends Controller
 
     public function store(StorePaintingRequest $request): RedirectResponse
     {
-        $data = $request->safe()->except('photo');
+        $data = $this->preparePaintingData($request);
         $data = array_merge($data, $this->extractPhotoData($request));
 
-        Painting::create($data);
+        $painting = Painting::create($data);
 
         return redirect()
             ->route('paintings.index')
@@ -65,7 +83,7 @@ class PaintingController extends Controller
 
     public function show(Painting $painting): View
     {
-        $painting->load('hotel');
+        $painting->load(['hotel', 'location', 'notes.user']);
 
         return view('paintings.show', compact('painting'));
     }
@@ -85,13 +103,14 @@ class PaintingController extends Controller
     public function edit(Painting $painting): View
     {
         $hotels = Hotel::where('status', 'active')->orderBy('name')->get();
+        $painting->load('location');
 
         return view('paintings.edit', compact('painting', 'hotels'));
     }
 
     public function update(UpdatePaintingRequest $request, Painting $painting): RedirectResponse
     {
-        $data = $request->safe()->except('photo');
+        $data = $this->preparePaintingData($request, $painting);
 
         if ($request->hasFile('photo')) {
             $data = array_merge($data, $this->extractPhotoData($request));
@@ -106,11 +125,51 @@ class PaintingController extends Controller
 
     public function destroy(Painting $painting): RedirectResponse
     {
+        $painting->deleteCertificateFile();
         $painting->delete();
 
         return redirect()
             ->route('paintings.index')
             ->with('success', 'Painting deleted successfully.');
+    }
+
+    private function preparePaintingData(Request $request, ?Painting $painting = null): array
+    {
+        $data = $request->safe()->except(['photo', 'certificate_file', 'new_location_name']);
+
+        $locationType = $request->input('location_type');
+
+        if ($locationType === 'hotel') {
+            $data['location_id'] = null;
+        } elseif ($locationType === 'location') {
+            $data['hotel_id'] = null;
+
+            if (! $request->filled('location_id') && $request->filled('new_location_name')) {
+                $location = Location::firstOrCreate(
+                    ['name' => trim($request->input('new_location_name'))],
+                    ['description' => null]
+                );
+                $data['location_id'] = $location->id;
+            }
+        } else {
+            $data['hotel_id'] = null;
+            $data['location_id'] = null;
+        }
+
+        if ($request->input('certificate_type') === 'text') {
+            $data['certificate_file_path'] = null;
+            if ($painting) {
+                $painting->deleteCertificateFile();
+            }
+        } elseif ($request->input('certificate_type') === 'file' && $request->hasFile('certificate_file')) {
+            if ($painting) {
+                $painting->deleteCertificateFile();
+            }
+            $data['certificate_file_path'] = $request->file('certificate_file')->store('certificates', 'public');
+            $data['certificate_text'] = null;
+        }
+
+        return $data;
     }
 
     private function extractPhotoData(Request $request): array

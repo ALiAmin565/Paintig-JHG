@@ -1,4 +1,7 @@
 import { initLiveHotelIndexSearch, initSearchableHotelSelects } from './hotel-search';
+import { initSearchableLocationSelects } from './location-search';
+import { initPaintingForm } from './painting-form';
+import { initLivePaintingIndexFilter } from './painting-index';
 
 document.addEventListener('DOMContentLoaded', function () {
     const mobileMenuToggle = document.getElementById('mobileMenuToggle');
@@ -59,5 +62,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     initSearchableHotelSelects();
+    initSearchableLocationSelects();
+    initPaintingForm();
     initLiveHotelIndexSearch();
+    initLivePaintingIndexFilter();
 });
