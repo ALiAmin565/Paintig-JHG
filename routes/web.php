@@ -21,6 +21,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::resource('hotels', HotelController::class)->only(['index', 'show']);
     Route::get('paintings/{painting}/photo', [PaintingController::class, 'photo'])->name('paintings.photo');
+    Route::get('paintings-export/print', [PaintingController::class, 'printAll'])->name('paintings.print-all');
+    Route::get('paintings/{painting}/print', [PaintingController::class, 'print'])->name('paintings.print');
     Route::post('paintings/{painting}/notes', [PaintingNoteController::class, 'store'])->name('paintings.notes.store');
     Route::resource('paintings', PaintingController::class);
     Route::get('/api/hotels', [ApiHotelController::class, 'index'])->name('api.hotels');

@@ -8,9 +8,18 @@
             <h1 class="text-2xl sm:text-3xl lg:text-4xl font-semibold text-gray-900 -tracking-wide">Paintings</h1>
             <p class="text-sm text-gray-500 mt-1" data-paintings-count>{{ $paintings->total() }} {{ Str::plural('record', $paintings->total()) }} in catalog</p>
         </div>
-        <a href="{{ route('paintings.create') }}" class="btn btn-primary btn-block-sm">
-            Add Painting
-        </a>
+        <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+            <a href="{{ route('paintings.print-all', request()->query()) }}"
+                target="_blank"
+                rel="noopener"
+                data-print-all-link
+                class="btn btn-secondary btn-block-sm">
+                Print / Export PDF
+            </a>
+            <a href="{{ route('paintings.create') }}" class="btn btn-primary btn-block-sm">
+                Add Painting
+            </a>
+        </div>
     </div>
 
     @if(session('success'))

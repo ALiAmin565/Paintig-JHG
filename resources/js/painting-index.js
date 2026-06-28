@@ -3,6 +3,7 @@ export function initLivePaintingIndexFilter() {
     const resultsContainer = document.querySelector('[data-live-painting-results]');
     const countEl = document.querySelector('[data-paintings-count]');
     const clearBtn = document.querySelector('[data-clear-filters]');
+    const printAllLink = document.querySelector('[data-print-all-link]');
 
     if (!form || !resultsContainer) {
         return;
@@ -45,11 +46,25 @@ export function initLivePaintingIndexFilter() {
         countEl.textContent = `${total} ${label} in catalog`;
     }
 
+    function updatePrintAllLink(url) {
+        if (!printAllLink) {
+            return;
+        }
+
+        const printBase = printAllLink.dataset.printBase || printAllLink.href.split('?')[0];
+        printAllLink.dataset.printBase = printBase;
+
+        const query = url ? url.split('?')[1] : new URLSearchParams(new FormData(form)).toString();
+        printAllLink.href = query ? `${printBase}?${query}` : printBase;
+    }
+
     function runFilter(url) {
         const targetUrl = url || (() => {
             const params = new URLSearchParams(new FormData(form));
             return `${form.action}?${params.toString()}`;
         })();
+
+        updatePrintAllLink(targetUrl);
 
         resultsContainer.classList.add('opacity-60', 'pointer-events-none');
 
@@ -122,4 +137,5 @@ export function initLivePaintingIndexFilter() {
     });
 
     updateClearButton();
+    updatePrintAllLink(window.location.href);
 }

@@ -173,6 +173,7 @@
 
             {{-- Actions --}}
             <div class="flex flex-col sm:flex-row gap-3 pb-4">
+                <a href="{{ route('paintings.print', $painting) }}" target="_blank" rel="noopener" class="btn btn-secondary btn-block-sm">Print</a>
                 <a href="{{ route('paintings.edit', $painting) }}" class="btn btn-primary btn-block-sm">Edit Painting</a>
                 <form action="{{ route('paintings.destroy', $painting) }}" method="POST" onsubmit="return confirm('Delete this painting?')" class="w-full sm:w-auto">
                     @csrf

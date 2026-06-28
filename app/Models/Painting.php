@@ -137,6 +137,20 @@ class Painting extends Model
         return $this->formatDimensions($this->width_without_frame, $this->height_without_frame);
     }
 
+    public function printDimensionsPair($width, $height): string
+    {
+        if ($width === null || $height === null) {
+            return '';
+        }
+
+        return number_format((float) $width, 0).' cm x '.number_format((float) $height, 0).' cm';
+    }
+
+    public function printPriceLabel(): string
+    {
+        return $this->currency.' '.number_format((float) $this->price, 0);
+    }
+
     public function hasCertificate(): bool
     {
         if ($this->certificate_type === 'file') {

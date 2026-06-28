@@ -19,37 +19,7 @@ class PaintingController extends Controller
     public function index(Request $request): View|\Illuminate\Http\Response
     {
         $query = Painting::query()->with(['hotel', 'location']);
-
-        if ($search = $request->string('search')->trim()->toString()) {
-            $query->where(function ($builder) use ($search) {
-                $builder->where('title', 'like', "%{$search}%")
-                    ->orWhere('media', 'like', "%{$search}%")
-                    ->orWhere('painter_name', 'like', "%{$search}%")
-                    ->orWhere('owned_by', 'like', "%{$search}%");
-            });
-        }
-
-        if ($locationType = $request->string('location_type')->trim()->toString()) {
-            $query->where('location_type', $locationType);
-        }
-
-        if ($hotelId = $request->integer('hotel_id')) {
-            $query->where('location_type', 'hotel')->where('hotel_id', $hotelId);
-        }
-
-        if ($locationId = $request->integer('location_id')) {
-            $query->where('location_type', 'location')->where('location_id', $locationId);
-        }
-
-        $sort = $request->string('sort')->toString();
-        match ($sort) {
-            'year_asc' => $query->orderBy('production_year'),
-            'year_desc' => $query->orderByDesc('production_year'),
-            'title_asc' => $query->orderBy('title'),
-            'price_desc' => $query->orderByDesc('price'),
-            'price_asc' => $query->orderBy('price'),
-            default => $query->orderByDesc('created_at'),
-        };
+        $this->applyFilters($request, $query);
 
         $paintings = $query->paginate(15)->withQueryString();
         $hotels = Hotel::orderBy('name')->get(['id', 'name']);
@@ -87,6 +57,23 @@ class PaintingController extends Controller
         $painting->load(['hotel', 'location', 'gallery', 'notes.user']);
 
         return view('paintings.show', compact('painting'));
+    }
+
+    public function print(Painting $painting): View
+    {
+        $painting->load(['hotel', 'location', 'gallery', 'notes.user']);
+
+        return view('paintings.print-single', compact('painting'));
+    }
+
+    public function printAll(Request $request): View
+    {
+        $query = Painting::query()->with(['hotel', 'location', 'gallery', 'notes']);
+        $this->applyFilters($request, $query);
+
+        $paintings = $query->get();
+
+        return view('paintings.print-all', compact('paintings'));
     }
 
     public function photo(Painting $painting): Response
@@ -197,5 +184,39 @@ class PaintingController extends Controller
             'photo' => file_get_contents($file->getRealPath()),
             'photo_mime' => $file->getMimeType(),
         ];
+    }
+
+    private function applyFilters(Request $request, $query): void
+    {
+        if ($search = $request->string('search')->trim()->toString()) {
+            $query->where(function ($builder) use ($search) {
+                $builder->where('title', 'like', "%{$search}%")
+                    ->orWhere('media', 'like', "%{$search}%")
+                    ->orWhere('painter_name', 'like', "%{$search}%")
+                    ->orWhere('owned_by', 'like', "%{$search}%");
+            });
+        }
+
+        if ($locationType = $request->string('location_type')->trim()->toString()) {
+            $query->where('location_type', $locationType);
+        }
+
+        if ($hotelId = $request->integer('hotel_id')) {
+            $query->where('location_type', 'hotel')->where('hotel_id', $hotelId);
+        }
+
+        if ($locationId = $request->integer('location_id')) {
+            $query->where('location_type', 'location')->where('location_id', $locationId);
+        }
+
+        $sort = $request->string('sort')->toString();
+        match ($sort) {
+            'year_asc' => $query->orderBy('production_year'),
+            'year_desc' => $query->orderByDesc('production_year'),
+            'title_asc' => $query->orderBy('title'),
+            'price_desc' => $query->orderByDesc('price'),
+            'price_asc' => $query->orderBy('price'),
+            default => $query->orderByDesc('created_at'),
+        };
     }
 }
