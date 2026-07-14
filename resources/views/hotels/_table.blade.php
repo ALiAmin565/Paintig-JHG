@@ -24,7 +24,23 @@
                     </td>
                     <td class="text-gray-700 hidden md:table-cell">{{ $hotel->paintings_count }}</td>
                     <td>
-                        <a href="{{ route('hotels.show', $hotel) }}" class="text-amber-900 hover:text-amber-950 font-medium text-sm sm:text-base">View</a>
+                        <div class="flex flex-col sm:flex-row sm:items-center gap-2">
+                            <a href="{{ route('hotels.show', $hotel) }}" class="text-amber-900 hover:text-amber-950 font-medium text-sm sm:text-base">View</a>
+                            
+                            @can('update', $hotel)
+                                <a href="{{ route('hotels.edit', $hotel) }}" class="text-blue-600 hover:text-blue-700 font-medium text-sm">Edit</a>
+                            @endcan
+
+                            @can('delete', $hotel)
+                                <form action="{{ route('hotels.destroy', $hotel) }}" method="POST" 
+                                      onsubmit="return confirm('Are you sure you want to delete this hotel? This action cannot be undone.')" 
+                                      class="inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="text-red-600 hover:text-red-700 font-medium text-sm">Delete</button>
+                                </form>
+                            @endcan
+                        </div>
                     </td>
                 </tr>
             @empty

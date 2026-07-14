@@ -764,3 +764,136 @@
         margin: 12mm;
     }
 }
+
+/* Image Upload Component */
+@layer components {
+    .image-upload {
+        @apply w-full;
+    }
+
+    .image-upload__input {
+        @apply sr-only;
+    }
+
+    .image-upload__dropzone {
+        @apply relative border-2 border-dashed border-gray-300 rounded-xl bg-gray-50 transition-colors duration-200 hover:border-gray-400 hover:bg-gray-100;
+    }
+
+    .image-upload__dropzone--dragover {
+        @apply border-amber-400 bg-amber-50;
+    }
+
+    .image-upload__content {
+        @apply flex flex-col items-center justify-center p-8 text-center;
+    }
+
+    .image-upload__icon {
+        @apply mb-4;
+    }
+
+    .image-upload__text {
+        @apply space-y-2;
+    }
+
+    .image-upload__primary-text {
+        @apply text-base font-medium text-gray-900;
+    }
+
+    .image-upload__browse-btn {
+        @apply text-amber-900 hover:text-amber-950 font-medium underline transition-colors;
+    }
+
+    .image-upload__secondary-text {
+        @apply text-sm text-gray-600;
+    }
+
+    .image-upload__info {
+        @apply text-xs text-gray-500;
+    }
+
+    .image-upload__preview {
+        @apply p-4;
+    }
+
+    .image-upload__preview-container {
+        @apply relative max-w-xs mx-auto mb-4;
+    }
+
+    .image-upload__preview-image {
+        @apply w-full h-auto max-h-64 object-contain rounded-lg shadow-md border border-gray-200;
+    }
+
+    .image-upload__preview-overlay {
+        @apply absolute inset-0 bg-black/0 hover:bg-black/20 transition-all duration-200 rounded-lg flex items-center justify-center opacity-0 hover:opacity-100;
+    }
+
+    .image-upload__preview-container:hover .image-upload__preview-overlay {
+        @apply bg-black/20 opacity-100;
+    }
+
+    .image-upload__preview-actions {
+        @apply flex gap-2;
+    }
+
+    .image-upload__action-btn {
+        @apply p-2 rounded-full bg-white shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105;
+    }
+
+    .image-upload__action-btn--change {
+        @apply text-blue-600 hover:text-blue-700;
+    }
+
+    .image-upload__action-btn--delete {
+        @apply text-red-600 hover:text-red-700;
+    }
+
+    .image-upload__preview-info {
+        @apply text-center space-y-1;
+    }
+
+    .image-upload__preview-filename {
+        @apply text-sm font-medium text-gray-900 truncate;
+    }
+
+    .image-upload__preview-size {
+        @apply text-xs text-gray-500;
+    }
+
+    .image-upload__error {
+        @apply text-red-600 text-sm mt-2;
+    }
+
+    .image-upload__loading {
+        @apply flex flex-col items-center justify-center p-8 text-center;
+    }
+
+    .image-upload__spinner {
+        @apply w-8 h-8 border-4 border-gray-300 border-t-amber-900 rounded-full animate-spin mb-3;
+    }
+
+    .image-upload__loading-text {
+        @apply text-sm text-gray-600;
+    }
+
+    /* Drag and drop states */
+    .image-upload--dragover .image-upload__dropzone {
+        @apply border-amber-400 bg-amber-50;
+    }
+
+    .image-upload--dragover .image-upload__icon {
+        @apply text-amber-600;
+    }
+
+    .image-upload--dragover .image-upload__primary-text {
+        @apply text-amber-900;
+    }
+
+    /* Small preview variant */
+    .image-upload--small .image-upload__preview-image {
+        @apply max-h-32;
+    }
+
+    .image-upload--small .image-upload__content {
+        @apply p-6;
+    }
+}

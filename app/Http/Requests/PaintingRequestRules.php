@@ -15,7 +15,7 @@ class PaintingRequestRules
         $optionalDimensionRule = ['nullable', 'numeric', 'min:0', 'max:'.self::MAX_DIMENSION];
 
         return [
-            'location_type' => ['required', Rule::in(['hotel', 'location', 'none'])],
+            'location_type' => ['nullable', Rule::in(['hotel', 'location', 'none'])],
             'hotel_id' => ['nullable', 'required_if:location_type,hotel', 'exists:hotels,id'],
             'location_id' => ['nullable', 'required_if:location_type,location', 'exists:locations,id'],
             'new_location_name' => ['nullable', 'string', 'max:255'],
@@ -29,15 +29,15 @@ class PaintingRequestRules
             'height_with_frame' => array_merge($optionalDimensionRule, ['required_with:width_with_frame']),
             'width_without_frame' => array_merge($optionalDimensionRule, ['required_with:height_without_frame']),
             'height_without_frame' => array_merge($optionalDimensionRule, ['required_with:width_without_frame']),
-            'owned_by' => ['required', 'string', 'max:255'],
-            'purchased_by' => ['required', 'string', 'max:255'],
-            'purchased_from_type' => ['required', Rule::in(['gallery', 'person'])],
+            'owned_by' => ['nullable', 'string', 'max:255'],
+            'purchased_by' => ['nullable', 'string', 'max:255'],
+            'purchased_from_type' => ['nullable', Rule::in(['gallery', 'person'])],
             'gallery_id' => ['nullable', 'required_if:purchased_from_type,gallery', 'exists:galleries,id'],
             'new_gallery_name' => ['nullable', 'string', 'max:255'],
-            'purchased_from_person' => ['nullable', 'required_if:purchased_from_type,person', 'string', 'max:255'],
-            'paid_by' => ['required', 'string', 'max:255'],
-            'certificate_type' => ['required', Rule::in(['text', 'file'])],
-            'certificate_text' => ['nullable', 'required_if:certificate_type,text', 'string', 'max:5000'],
+            'purchased_from_person' => ['nullable', 'string', 'max:255'],
+            'paid_by' => ['nullable', 'string', 'max:255'],
+            'certificate_type' => ['nullable', Rule::in(['text', 'file'])],
+            'certificate_text' => ['nullable', 'string', 'max:5000'],
             'certificate_file' => array_merge(
                 [$photoRequired ? 'nullable' : 'nullable'],
                 ['file', 'mimes:pdf,jpg,jpeg,png,webp', 'max:10240']
@@ -63,8 +63,6 @@ class PaintingRequestRules
             'hotel_id.required_if' => 'Please select a hotel when location type is Hotel.',
             'location_id.required_if' => 'Please select or create a location when location type is Other Location.',
             'gallery_id.required_if' => 'Please select or create a gallery when purchased from type is Gallery.',
-            'purchased_from_person.required_if' => 'Please enter a person name when purchased from type is Person.',
-            'certificate_text.required_if' => 'Certificate text is required when using text mode.',
             'price.required' => 'Price is required.',
             'currency.required' => 'Currency is required.',
         ];

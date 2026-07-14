@@ -5,10 +5,19 @@
 @section('content')
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <h1 class="text-2xl sm:text-3xl lg:text-4xl font-semibold text-gray-900 -tracking-wide">Hotels</h1>
+        @can('create', App\Models\Hotel::class)
+            <a href="{{ route('hotels.create') }}" class="btn btn-primary btn-block-sm">
+                Add Hotel
+            </a>
+        @endcan
     </div>
 
     @if(session('success'))
         <x-alert type="success" dismissible>{{ session('success') }}</x-alert>
+    @endif
+
+    @if(session('error'))
+        <x-alert type="error" dismissible>{{ session('error') }}</x-alert>
     @endif
 
     <div class="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-200 mb-6">

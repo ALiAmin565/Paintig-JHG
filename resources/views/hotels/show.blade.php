@@ -10,11 +10,33 @@
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
             <h1 class="text-2xl sm:text-3xl lg:text-4xl font-semibold text-gray-900 -tracking-wide">{{ $hotel->name }}</h1>
-            <p class="text-gray-600 mt-2">PMS Code: {{ $hotel->pms_code }} &middot; {{ $hotel->paintings_count }} paintings</p>
+            <p class="text-gray-600 mt-2">
+                PMS Code: {{ $hotel->pms_code }} &middot; 
+                <x-badge :variant="$hotel->status === 'active' ? 'active' : 'inactive'">{{ ucfirst($hotel->status) }}</x-badge>
+                &middot; {{ $hotel->paintings_count }} paintings
+            </p>
         </div>
-        <a href="{{ route('paintings.create', ['hotel_id' => $hotel->id]) }}" class="btn btn-primary btn-block-sm">
-            Add Painting
-        </a>
+        <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+            <a href="{{ route('paintings.create', ['hotel_id' => $hotel->id]) }}" class="btn btn-primary btn-block-sm">
+                Add Painting
+            </a>
+            
+            @can('update', $hotel)
+                <a href="{{ route('hotels.edit', $hotel) }}" class="btn btn-secondary btn-block-sm">
+                    Edit Hotel
+                </a>
+            @endcan
+            
+            @can('delete', $hotel)
+                <form action="{{ route('hotels.destroy', $hotel) }}" method="POST" 
+                      onsubmit="return confirm('Are you sure you want to delete this hotel? This will permanently delete the hotel and cannot be undone.')" 
+                      class="w-full sm:w-auto">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger btn-block-sm w-full">Delete Hotel</button>
+                </form>
+            @endcan
+        </div>
     </div>
 
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">

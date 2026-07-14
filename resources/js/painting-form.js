@@ -21,9 +21,6 @@ export function initPaintingForm() {
             hotelSection.classList.toggle('hidden', selected !== 'hotel');
             hotelSection.querySelectorAll('input, select').forEach(function (input) {
                 input.disabled = selected !== 'hotel';
-                if (input.dataset.hotelIdInput !== undefined || input.hasAttribute('data-hotel-id-input')) {
-                    input.required = selected === 'hotel';
-                }
             });
         }
 
@@ -31,9 +28,6 @@ export function initPaintingForm() {
             locationSection.classList.toggle('hidden', selected !== 'location');
             locationSection.querySelectorAll('input, select').forEach(function (input) {
                 input.disabled = selected !== 'location';
-                if (input.hasAttribute('data-location-id-input')) {
-                    input.required = selected === 'location';
-                }
             });
         }
     }
@@ -57,9 +51,6 @@ export function initPaintingForm() {
             gallerySection.classList.toggle('hidden', selected !== 'gallery');
             gallerySection.querySelectorAll('input, select').forEach(function (input) {
                 input.disabled = selected !== 'gallery';
-                if (input.hasAttribute('data-gallery-id-input')) {
-                    input.required = selected === 'gallery';
-                }
             });
         }
 
@@ -68,7 +59,6 @@ export function initPaintingForm() {
             const personInput = personSection.querySelector('#purchased_from_person');
             if (personInput) {
                 personInput.disabled = selected !== 'person';
-                personInput.required = selected === 'person';
             }
         }
     }

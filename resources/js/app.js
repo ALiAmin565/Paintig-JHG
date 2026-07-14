@@ -1,5 +1,6 @@
 import { initSearchableGallerySelects } from './gallery-search';
 import { initLiveHotelIndexSearch, initSearchableHotelSelects } from './hotel-search';
+import { initImageUpload } from './image-upload';
 import { initSearchableLocationSelects } from './location-search';
 import { initPaintingForm } from './painting-form';
 import { initLivePaintingIndexFilter } from './painting-index';
@@ -68,4 +69,5 @@ document.addEventListener('DOMContentLoaded', function () {
     initPaintingForm();
     initLiveHotelIndexSearch();
     initLivePaintingIndexFilter();
+    initImageUpload();
 });

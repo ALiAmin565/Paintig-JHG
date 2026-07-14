@@ -11,19 +11,16 @@
 
     {{-- Photo --}}
     <section class="painting-form__section">
-        <h2 class="painting-form__section-title">Photo</h2>
+        <h2 class="painting-form__section-title">Upload Image @if(!$painting)<x-required-mark />@endif</h2>
         <div class="painting-form__field">
-            @if($painting?->photoUrl())
-                <img src="{{ $painting->photoUrl() }}" alt="{{ $painting->title }}" class="painting-form__photo-preview">
-            @endif
-            <label for="photo" class="painting-form__label">Upload Image @if(!$painting)<x-required-mark />@endif</label>
-            <input type="file" name="photo" id="photo" accept="image/jpeg,image/png,image/webp"
-                class="painting-form__photo-upload"
-                @if(!$painting) required @endif>
-            <p class="text-xs text-gray-500 mt-1.5">JPEG, PNG, or WebP — max 5 MB</p>
-            @error('photo')
-                <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
-            @enderror
+            <x-image-upload 
+                name="photo" 
+                id="photo" 
+                :current-image="$painting?->photoUrl()" 
+                :required="!$painting"
+                max-size="5MB" 
+                accept="image/jpeg,image/png,image/webp" 
+            />
         </div>
     </section>
 
@@ -151,7 +148,7 @@
 
     {{-- Location --}}
     <section class="painting-form__section">
-        <h2 class="painting-form__section-title">Location <x-required-mark /></h2>
+        <h2 class="painting-form__section-title">Location</h2>
         <div class="painting-form__pills">
             @foreach(['hotel' => 'Hotel', 'location' => 'Other Location', 'none' => 'N/A'] as $value => $label)
                 <label @class([
@@ -178,7 +175,7 @@
                     $selectedHotelLabel = $selectedHotel ? "{$selectedHotel->name} ({$selectedHotel->pms_code})" : null;
                 }
             @endphp
-            <label class="painting-form__label mb-2">Hotel <x-required-mark /></label>
+            <label class="painting-form__label mb-2">Hotel</label>
             <x-searchable-hotel-select
                 :selected-id="$selectedHotelId"
                 :selected-label="$selectedHotelLabel"
@@ -194,7 +191,7 @@
                 $selectedLocationId = old('location_id', $painting?->location_id);
                 $selectedLocationLabel = old('new_location_name') ?: ($painting?->location?->name);
             @endphp
-            <label class="painting-form__label mb-2">Other Location <x-required-mark /></label>
+            <label class="painting-form__label mb-2">Other Location</label>
             <x-searchable-location-select
                 :selected-id="$selectedLocationId"
                 :selected-label="$selectedLocationLabel"
@@ -214,34 +211,34 @@
         <h2 class="painting-form__section-title">Ownership & Purchase</h2>
         <div class="painting-form__grid--2">
             <div class="painting-form__field">
-                <label for="owned_by" class="painting-form__label">Owned By <x-required-mark /></label>
+                <label for="owned_by" class="painting-form__label">Owned By</label>
                 <input type="text" name="owned_by" id="owned_by" value="{{ old('owned_by', $painting?->owned_by) }}"
-                    class="painting-form__input" required>
+                    class="painting-form__input">
                 @error('owned_by')
                     <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                 @enderror
             </div>
 
             <div class="painting-form__field">
-                <label for="purchased_by" class="painting-form__label">Purchased By <x-required-mark /></label>
+                <label for="purchased_by" class="painting-form__label">Purchased By</label>
                 <input type="text" name="purchased_by" id="purchased_by" value="{{ old('purchased_by', $painting?->purchased_by) }}"
-                    class="painting-form__input" required>
+                    class="painting-form__input">
                 @error('purchased_by')
                     <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                 @enderror
             </div>
 
             <div class="painting-form__field">
-                <label for="paid_by" class="painting-form__label">Paid By <x-required-mark /></label>
+                <label for="paid_by" class="painting-form__label">Paid By</label>
                 <input type="text" name="paid_by" id="paid_by" value="{{ old('paid_by', $painting?->paid_by) }}"
-                    class="painting-form__input" required>
+                    class="painting-form__input">
                 @error('paid_by')
                     <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                 @enderror
             </div>
 
             <div class="painting-form__field painting-form__field--span-2 sm:col-span-2">
-                <label class="painting-form__label">Purchased From <x-required-mark /></label>
+                <label class="painting-form__label">Purchased From</label>
                 <div class="painting-form__pills">
                     @foreach(['gallery' => 'Gallery', 'person' => 'Person'] as $value => $label)
                         <label @class([
@@ -264,7 +261,7 @@
                         $selectedGalleryId = old('gallery_id', $painting?->gallery_id);
                         $selectedGalleryLabel = old('new_gallery_name') ?: ($painting?->gallery?->name);
                     @endphp
-                    <label class="painting-form__label mb-2">Gallery <x-required-mark /></label>
+                    <label class="painting-form__label mb-2">Gallery</label>
                     <x-searchable-gallery-select
                         :selected-id="$selectedGalleryId"
                         :selected-label="$selectedGalleryLabel"
@@ -279,11 +276,11 @@
                 </div>
 
                 <div data-purchased-from-section="person" @class(['hidden' => $purchasedFromType !== 'person'])>
-                    <label for="purchased_from_person" class="painting-form__label">Person Name <x-required-mark /></label>
+                    <label for="purchased_from_person" class="painting-form__label">Person Name</label>
                     <input type="text" name="purchased_from_person" id="purchased_from_person"
                         value="{{ old('purchased_from_person', $painting?->purchased_from_person) }}"
                         placeholder="Enter person name..."
-                        class="painting-form__input" @if($purchasedFromType === 'person') required @endif>
+                        class="painting-form__input">
                     @error('purchased_from_person')
                         <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                     @enderror
@@ -294,7 +291,7 @@
 
     {{-- Certificate --}}
     <section class="painting-form__section">
-        <h2 class="painting-form__section-title">Certificate of Authenticity <x-required-mark /></h2>
+        <h2 class="painting-form__section-title">Certificate of Authenticity</h2>
         <div class="painting-form__pills">
             @foreach(['text' => 'Text', 'file' => 'File Upload'] as $value => $label)
                 <label @class([
@@ -313,7 +310,7 @@
         @enderror
 
         <div data-certificate-section="text" @class(['hidden' => $certificateType !== 'text'])>
-            <label for="certificate_text" class="painting-form__label">Certificate Text <x-required-mark /></label>
+            <label for="certificate_text" class="painting-form__label">Certificate Text</label>
             <textarea name="certificate_text" id="certificate_text" rows="3" class="painting-form__input"
                 placeholder="Enter certificate details...">{{ old('certificate_text', $painting?->certificate_text) }}</textarea>
             @error('certificate_text')

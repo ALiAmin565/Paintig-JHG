@@ -19,7 +19,7 @@ Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-    Route::resource('hotels', HotelController::class)->only(['index', 'show']);
+    Route::resource('hotels', HotelController::class);
     Route::get('paintings/{painting}/photo', [PaintingController::class, 'photo'])->name('paintings.photo');
     Route::get('paintings-export/print', [PaintingController::class, 'printAll'])->name('paintings.print-all');
     Route::get('paintings/{painting}/print', [PaintingController::class, 'print'])->name('paintings.print');
